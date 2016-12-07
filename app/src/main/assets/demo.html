@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+	body, html{width: 100%;height: 100%;margin:0;}
+
+
+    </style>
+
+    <title>地图展示</title>
+</head>
+<body>
+<div id="allmap" style="width: 100%;height: 350px;overflow: hidden;margin:0"></div>
+
+<div style="width: 100%;height: 350px;margin:0">
+    <img id="img" src="http://www.sinaimg.cn/dy/slidenews/2_img/2016_49/730_2007396_335044.jpg"
+         align="right" style="width: 100px;height: 100px;margin: 10px;" onclick="pickImage();">
+    <p>
+        <input type="button" id="enter" value="jsCallJava" onclick="jsCallJava();"/>
+    </p>
+
+    <p id="text">this is p</p>
+</div>
+
+</body>
+<script type="text/javascript">
+    function jsCallJava(){
+             //call native method
+            window.WebViewJavascriptBridge.callHandler(
+                'jsCallJava'
+                , "100"
+                , function(responseData) {
+                    document.getElementById("text").innerHTML = "data = \n" + responseData
+                }
+            );
+    }
+    function pickImage(){
+             //call native method
+            window.WebViewJavascriptBridge.callHandler(
+                'jsCallJava'
+                , "101"
+                , function(responseData) {
+                    document.getElementById("text").innerHTML = "data = \n" + responseData
+                }
+            );
+    }
+
+      function connectWebViewJavascriptBridge(callback) {
+            if (window.WebViewJavascriptBridge) {
+                callback(WebViewJavascriptBridge)
+            } else {
+                document.addEventListener(
+                    'WebViewJavascriptBridgeReady'
+                    , function() {
+                        callback(WebViewJavascriptBridge)
+                    },
+                    false
+                );
+            }
+        }
+
+        connectWebViewJavascriptBridge(function(bridge) {
+            bridge.init(function(message, responseCallback) {
+                var data = {
+                    'Javascript Responds': '测试中文!'
+                };
+                responseCallback(data);
+            });
+
+            bridge.registerHandler("javaCallJS", function(data, responseCallback) {
+                document.getElementById("img").src=data;
+                responseCallback("Js get Data!");
+            });
+        })
+
+
+
+
+</script>
+<script type="text/javascript"
+        src="http://api.map.baidu.com/api?v=2.0&ak=mrboFAABXf9sY8hbqd46dBxoIoHRHYqy&s=1">
+</script>
+<script type="text/javascript">
+    // 百度地图API功能
+    setTimeout(function(){
+        var map = new BMap.Map("allmap");    // 创建Map实例
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 11);  // 初始化地图,设置中心点坐标和地图级别
+        map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+        map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+        map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+    },2000)
+
+</script>
+</html>
